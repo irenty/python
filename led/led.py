@@ -11,6 +11,14 @@ RED = 'RED'
 GREEN = 'GREEN'
 BLUE = 'BLUE' 
 
+COLOR_CODES = {
+	RED: '\x1b[6;30;31m',
+	GREEN: '\x1b[6;30;32m',
+	BLUE: '\x1b[6;30;34m'
+}
+
+NC = '\x1b[0m' # No Color
+
 PIN_NUMBER = {  (FELIX, RED): 11,
 				(FELIX, GREEN): 12,
 				(FELIX, BLUE): 13,
@@ -53,8 +61,10 @@ def get_command(name):
     		return (command, color)
 
 def change_colors(name, command, color):
-	print ">>> OK {0}, {1} is turning {2}".format(name, color.lower(), command.lower())
+	color_code = COLOR_CODES[color]
+	print ">>> OK {0}, {1}{2}{3} is turning {4}".format(name, color_code, color.lower(), NC, command.lower())
 	pin = PIN_NUMBER[(name, color)]
+
 	print "turning pin {0} {1}".format(pin, command.lower())
 
 
