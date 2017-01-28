@@ -1,4 +1,9 @@
 
+try:
+    import RPi.GPIO as GPIO
+except RuntimeError:
+    print("Error importing RPi.GPIO!  This is probably because you need superuser privileges.  You can achieve this by using 'sudo' to run your script")
+
 # names
 FELIX = 'Felix'
 NELA = 'Nela'
@@ -10,6 +15,8 @@ ASKNAME = ''
 RED = 'RED'
 GREEN = 'GREEN'
 BLUE = 'BLUE' 
+ORANGE = 'ORANGE'
+YELLOW = 'YELLOW'
 
 COLOR_CODES = {
 	RED: '\x1b[6;30;31m',
@@ -19,12 +26,14 @@ COLOR_CODES = {
 
 NC = '\x1b[0m' # No Color
 
-PIN_NUMBER = {  (FELIX, RED): 11,
-				(FELIX, GREEN): 12,
-				(FELIX, BLUE): 13,
-				(NELA, RED): 14,
-				(NELA, GREEN): 15,
-				(NELA, BLUE): 16}
+PIN_NUMBER = {  (FELIX, RED): 23,
+				(FELIX, GREEN): 17,
+				(FELIX, BLUE): 27,
+                                (FELIX, ORANGE): 18,
+                                (FELIX, YELLOW): 5}
+#				(NELA, RED): 14,
+#				(NELA, GREEN): 15,
+#				(NELA, BLUE): 16}
 
 def get_name():
     while True:
@@ -54,7 +63,10 @@ def get_command(name):
     		color = GREEN	
     	elif BLUE in commandStrUpper:
     		color = BLUE	
-
+        elif YELLOW in commandStrUpper:
+                color = YELLOW
+        elif ORANGE in commandStrUpper:
+                color = ORANGE
     	if not command or not color:
     		print ">>> Sorry, I don't understand that!"
     	else:
@@ -64,9 +76,9 @@ def change_colors(name, command, color):
 	color_code = COLOR_CODES[color]
 	print ">>> OK {0}, {1}{2}{3} is turning {4}".format(name, color_code, color.lower(), NC, command.lower())
 	pin = PIN_NUMBER[(name, color)]
-
 	print "turning pin {0} {1}".format(pin, command.lower())
-
+        
+        
 
 def main():
 	name = get_name()
@@ -77,5 +89,17 @@ def main():
 		else:
 			change_colors(name, command, color)
 
+def setup():
+    GPIO.setmode(GPIO.BCM)
+    for c in PIN_NUMBER:
+        print "pin to clear: {0}".format(PIN_NUMBER[c])   
+        GPIO.setup(PIN_NUMBER[c], GPIO.OUT)
+        if c[1] == BLUE:
+            GPIO.output(PIN_NUMBER[c], 1)
+        else:
+            GPIO.output(PIN_NUMBER[c], 0)
+
 if __name__ == "__main__":
-    main()  
+#    main()
+     setup() 
+     GPIO.cleanup() 
